@@ -1,0 +1,60 @@
+@import 'tailwindcss';
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
+@theme {
+  --font-sans: 'Inter', system-ui, 'Segoe UI', Roboto, sans-serif;
+  --color-brand-50: #f0f7ff;
+  --color-brand-100: #dceeff;
+  --color-brand-200: #b6dcff;
+  --color-brand-300: #7ec2ff;
+  --color-brand-400: #3fa0ff;
+  --color-brand-500: #147df5;
+  --color-brand-600: #0763d1;
+  --color-brand-700: #064ea8;
+  --color-brand-800: #0a4288;
+  --color-brand-900: #0d3970;
+  --color-brand-950: #082347;
+}
+
+:root {
+  color-scheme: light;
+}
+
+[data-theme='dark'] {
+  color-scheme: dark;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+::selection {
+  background: var(--color-brand-200);
+}
+
+[data-theme='dark'] ::selection {
+  background: var(--color-brand-800);
+}
+
+/* Slim scrollbars for the desktop-app feel */
+* {
+  scrollbar-width: thin;
+  scrollbar-color: theme(colors.slate.300) transparent;
+}
+
+[data-theme='dark'] * {
+  scrollbar-color: theme(colors.slate.700) transparent;
+}
