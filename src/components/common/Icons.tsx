@@ -99,6 +99,26 @@ export const TrendingUpIcon = (props: IconProps) => (
   </svg>
 )
 
+export const CameraIcon = (props: IconProps) => (
+  <svg {...base} {...props}>
+    <path d="M4 8h3l1.5-2h7L17 8h3a1 1 0 0 1 1 1v9a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" />
+    <circle cx="12" cy="13" r="3.5" />
+  </svg>
+)
+
+export const LoaderIcon = (props: IconProps) => (
+  <svg {...base} {...props}>
+    <path d="M12 3v3M12 18v3M4.2 4.2l2.1 2.1M17.7 17.7l2.1 2.1M3 12h3M18 12h3M4.2 19.8l2.1-2.1M17.7 6.3l2.1-2.1" />
+  </svg>
+)
+
+export const ReceiptIcon = (props: IconProps) => (
+  <svg {...base} {...props}>
+    <path d="M6 3h12a1 1 0 0 1 1 1v17l-2.5-1.5L14 21l-2-1.5L10 21l-2.5-1.5L5 21V4a1 1 0 0 1 1-1Z" />
+    <path d="M8 8h8M8 12h8M8 16h5" />
+  </svg>
+)
+
 export const PiggyBankIcon = (props: IconProps) => (
   <svg {...base} {...props}>
     <path d="M19 9V6a1 1 0 0 0-1-1h-2.5A5.5 5.5 0 0 0 5 8.5c0 1-.4 1.5-1 2s-1 1.2-1 2v1a2 2 0 0 0 2 2h1v3h3v-2h4v2h3v-3.2c1.2-.6 2-1.9 2-3.3V11" />

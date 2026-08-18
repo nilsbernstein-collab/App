@@ -3,6 +3,7 @@ import { useDashboardStats } from '@/hooks/useDashboardStats'
 import { useCategoryLookup } from '@/hooks/useCategoryLookup'
 import { useIncomeSources } from '@/hooks/useIncomeSources'
 import { StatCard } from '@/components/dashboard/StatCard'
+import { BudgetProgressList } from '@/components/dashboard/BudgetProgressList'
 import { TransactionRow } from '@/components/transactions/TransactionRow'
 import { Skeleton } from '@/components/common/Skeleton'
 import { formatMoney } from '@/lib/money'
@@ -43,6 +44,8 @@ export function DashboardPage() {
           tone="negative"
         />
       </div>
+
+      <BudgetProgressList />
 
       <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
         <div className="mb-3 flex items-center justify-between">

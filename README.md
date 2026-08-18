@@ -13,7 +13,8 @@ IndexedDB, kein Server nötig zum Betrieb.
 - **Dexie.js** als IndexedDB-Layer (offline-first)
 - **React Router** für Client-Side-Routing
 - **Recharts** für Diagramme, **Framer Motion** für Animationen
-- **jsPDF** für PDF-Reports (lazy-loaded, nur bei tatsächlichem Export geladen)
+- **jsPDF** für PDF-Reports/Rechnungen (lazy-loaded, nur bei tatsächlichem Export geladen)
+- **Tesseract.js** für clientseitige Belegerkennung (OCR, lazy-loaded)
 
 ## Architektur
 
@@ -22,20 +23,24 @@ src/
   components/     UI-Komponenten, gruppiert nach Feature
     layout/         AppShell, Sidebar, Header, MobileNav
     dashboard/      Dashboard-spezifische Komponenten
-    transactions/   Transaktionsformular & -liste
+    transactions/   Transaktionsformular (inkl. Beleg-Scan) & -liste
+    invoices/       Rechnungsformular & Status-Badge
     charts/         Recharts-Wrapper (Bar/Line/Comparison)
     upgrade/        Upgrade- & Checkout-Modal
-    reports/        Steuerrücklage, Export-Panel
-    settings/       Kategorie-Manager, API-Zugang
+    reports/        Steuerrücklage, Export-Panel, Projekt-Rentabilität
+    settings/       Kategorie-, Budget-, Projekt- & Recurring-Rule-Manager, API-Zugang
     common/         Modal, Skeleton, Icons, ProGate, ...
-  pages/          Eine Komponente pro Route (Dashboard, Transactions, Reports, Settings)
+  pages/          Eine Komponente pro Route (Dashboard, Transactions, Invoices, Reports, Settings)
   hooks/          React-Query-Hooks (useTransactions, useCategories, ...) + abgeleitete Selektoren
   store/          Zustand-Stores (UI-State, Theme)
   data/
-    db.ts             Dexie-Schema + Seeding
-    repositories/     Ein Repository pro Entität — einziger Ort, der auf Dexie zugreift
-  lib/            Reine Business-Logik ohne React-Abhängigkeit (Geld, Datum, Steuer, Prognose, Export, Pricing)
-  types/          Domain-Typen (Transaction, Category, IncomeSource, Subscription, Settings)
+    db.ts                  Dexie-Schema + Seeding
+    recurringGenerator.ts  Materialisiert fällige wiederkehrende Buchungen als echte Transaktionen
+    repositories/          Ein Repository pro Entität — einziger Ort, der auf Dexie zugreift
+  lib/            Reine Business-Logik ohne React-Abhängigkeit (Geld, Datum, Steuer, Prognose,
+                  Export, Pricing, Recurrence, OCR-Parsing)
+  types/          Domain-Typen (Transaction, Category, IncomeSource, Subscription, Settings,
+                  RecurringRule, Project, Budget, Invoice)
 ```
 
 ### Warum ein Repository-Pattern?
@@ -58,6 +63,22 @@ Datenbank-Tabellen abbilden.
 - **Reiner UI-State** (welches Modal ist offen, Sidebar-Status, Theme) liegt
   in Zustand-Stores (`store/uiStore.ts`, `store/themeStore.ts`) und hat
   nichts mit Persistenz zu tun.
+
+### Kernfunktionen
+
+- **Wiederkehrende Buchungen** (`data/recurringGenerator.ts`, `lib/recurrence.ts`): Regeln mit
+  Frequenz/Intervall werden beim App-Start gegen `lastGeneratedDate` abgeglichen und fehlende
+  Vorkommen als echte Transaktionen materialisiert — idempotent, auch nach längerer Abwesenheit.
+- **Belegscan** (`lib/ocr.ts`): Tesseract.js läuft komplett im Browser (kein Cloud-OCR-Dienst),
+  lädt sein Worker/Sprachmodell aber beim ersten Einsatz von einem CDN nach — dafür ist einmalig
+  eine Internetverbindung nötig. Ein 30s-Timeout verhindert einen hängenden Zustand bei Netzwerkfehlern.
+- **Budgets** (`hooks/useBudgetProgress.ts`): monatliches Limit pro Ausgaben-Kategorie, Fortschritt
+  wird live aus den Transaktionen des laufenden Monats berechnet, keine eigene "Ist"-Ablage nötig.
+- **Projekt-Rentabilität** (`hooks/useProjectProfitability.ts`): Transaktionen bekommen ein optionales
+  `projectId`; Einnahmen/Ausgaben/Marge werden daraus abgeleitet, nicht separat gepflegt.
+- **Rechnungen** (`hooks/useInvoices.ts`): Positionen, PDF-Export, Status-Tracking. Beim Markieren als
+  „bezahlt" wird automatisch eine verknüpfte Einnahme-Transaktion erzeugt (`invoiceId`/`paidTransactionId`),
+  damit Rechnungsstellung und Cashflow-Tracking konsistent bleiben statt doppelt gepflegt zu werden.
 
 ### Free-Tier / Pro-Tier
 

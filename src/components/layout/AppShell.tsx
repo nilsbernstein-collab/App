@@ -10,6 +10,7 @@ import { useKeyboardShortcuts } from '@/hooks/useKeyboardShortcuts'
 const titles: Record<string, string> = {
   '/': 'Dashboard',
   '/transactions': 'Transaktionen',
+  '/invoices': 'Rechnungen',
   '/reports': 'Berichte',
   '/settings': 'Einstellungen',
 }

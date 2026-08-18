@@ -8,6 +8,9 @@ import { FREE_LIMITS } from '@/lib/limits'
 import { PlusIcon, TrashIcon, SparkleIcon, MoonIcon, SunIcon } from '@/components/common/Icons'
 import { CategoryManager } from '@/components/settings/CategoryManager'
 import { ApiAccessCard } from '@/components/settings/ApiAccessCard'
+import { RecurringRulesManager } from '@/components/settings/RecurringRulesManager'
+import { BudgetManager } from '@/components/settings/BudgetManager'
+import { ProjectManager } from '@/components/settings/ProjectManager'
 import type { Theme } from '@/types/settings'
 
 function SectionCard({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
@@ -143,6 +146,18 @@ export function SettingsPage() {
 
       <SectionCard title="Kategorien" description="Standard-Kategorien für Einnahmen und Ausgaben.">
         <CategoryManager />
+      </SectionCard>
+
+      <SectionCard title="Wiederkehrende Buchungen">
+        <RecurringRulesManager />
+      </SectionCard>
+
+      <SectionCard title="Budgets" description="Monatliche Ausgabenlimits pro Kategorie.">
+        <BudgetManager />
+      </SectionCard>
+
+      <SectionCard title="Projekte & Kunden">
+        <ProjectManager />
       </SectionCard>
 
       <SectionCard

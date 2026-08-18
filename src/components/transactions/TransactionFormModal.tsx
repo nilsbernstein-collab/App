@@ -1,14 +1,16 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Modal } from '@/components/common/Modal'
 import { useUiStore } from '@/store/uiStore'
 import { useCategories } from '@/hooks/useCategories'
 import { useIncomeSources } from '@/hooks/useIncomeSources'
+import { useProjects } from '@/hooks/useProjects'
 import { useCreateTransaction, useDeleteTransaction, useUpdateTransaction } from '@/hooks/useTransactions'
 import { eurosToCents, centsToEuros } from '@/lib/money'
 import { toIsoDate } from '@/lib/date'
 import { suggestCategory } from '@/lib/categorize'
+import { scanReceipt } from '@/lib/ocr'
 import { useIsPro } from '@/hooks/useSubscription'
-import { TrashIcon, SparkleIcon } from '@/components/common/Icons'
+import { TrashIcon, SparkleIcon, CameraIcon, LoaderIcon } from '@/components/common/Icons'
 import type { TransactionType } from '@/types/transaction'
 import toast from 'react-hot-toast'
 
@@ -21,6 +23,7 @@ export function TransactionFormModal() {
 
   const { data: categories = [] } = useCategories()
   const { data: sources = [] } = useIncomeSources()
+  const { data: projects = [] } = useProjects()
   const createTransaction = useCreateTransaction()
   const updateTransaction = useUpdateTransaction()
   const deleteTransaction = useDeleteTransaction()
@@ -30,9 +33,12 @@ export function TransactionFormModal() {
   const [date, setDate] = useState(toIsoDate(new Date()))
   const [categoryId, setCategoryId] = useState('')
   const [sourceId, setSourceId] = useState('')
+  const [projectId, setProjectId] = useState('')
   const [note, setNote] = useState('')
   const [amountError, setAmountError] = useState<string | null>(null)
   const [autoSuggestedCategoryId, setAutoSuggestedCategoryId] = useState<string | null>(null)
+  const [isScanning, setIsScanning] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement>(null)
 
   const categoriesForType = categories.filter((c) => c.type === type)
 
@@ -43,11 +49,13 @@ export function TransactionFormModal() {
       setDate(editing.date)
       setCategoryId(editing.categoryId)
       setSourceId(editing.sourceId ?? '')
+      setProjectId(editing.projectId ?? '')
       setNote(editing.note ?? '')
     } else {
       setAmount('')
       setDate(toIsoDate(new Date()))
       setNote('')
+      setProjectId('')
       setSourceId(sources[0]?.id ?? '')
     }
     setAmountError(null)
@@ -92,6 +100,7 @@ export function TransactionFormModal() {
       date,
       categoryId,
       sourceId: type === 'income' ? sourceId || undefined : undefined,
+      projectId: projectId || undefined,
       note: note.trim() || undefined,
     }
 
@@ -107,6 +116,31 @@ export function TransactionFormModal() {
     if (!editing) return
     deleteTransaction.mutate(editing.id)
     closeForm()
+  }
+
+  const handleReceiptFile = async (file: File | undefined) => {
+    if (!file) return
+    setIsScanning(true)
+    try {
+      const result = await scanReceipt(file)
+      if (result.amountCents) {
+        setAmount(String(centsToEuros(result.amountCents)))
+        setAmountError(null)
+      }
+      if (result.date) setDate(result.date)
+      if (result.vendor && !note) setNote(result.vendor)
+
+      if (result.amountCents || result.date || result.vendor) {
+        toast.success('Beleg gescannt — bitte Angaben prüfen')
+      } else {
+        toast.error('Konnte nichts vom Beleg erkennen. Bitte manuell eintragen.')
+      }
+    } catch {
+      toast.error('Beleg-Scan fehlgeschlagen.')
+    } finally {
+      setIsScanning(false)
+      if (fileInputRef.current) fileInputRef.current.value = ''
+    }
   }
 
   return (
@@ -134,6 +168,37 @@ export function TransactionFormModal() {
             </button>
           ))}
         </div>
+
+        {type === 'expense' && !editing && (
+          <div>
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept="image/*"
+              capture="environment"
+              className="hidden"
+              onChange={(e) => handleReceiptFile(e.target.files?.[0])}
+            />
+            <button
+              type="button"
+              disabled={isScanning}
+              onClick={() => fileInputRef.current?.click()}
+              className="flex w-full items-center justify-center gap-1.5 rounded-lg border border-dashed border-slate-300 py-2 text-sm font-medium text-slate-500 transition hover:bg-slate-50 disabled:opacity-60 dark:border-slate-700 dark:text-slate-400 dark:hover:bg-slate-800"
+            >
+              {isScanning ? (
+                <>
+                  <LoaderIcon className="h-4 w-4 animate-spin" />
+                  Beleg wird gescannt…
+                </>
+              ) : (
+                <>
+                  <CameraIcon className="h-4 w-4" />
+                  Beleg scannen
+                </>
+              )}
+            </button>
+          </div>
+        )}
 
         <div>
           <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">Betrag (€)</label>
@@ -199,6 +264,26 @@ export function TransactionFormModal() {
               {sources.map((s) => (
                 <option key={s.id} value={s.id}>
                   {s.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        )}
+
+        {projects.length > 0 && (
+          <div>
+            <label className="mb-1 block text-sm font-medium text-slate-700 dark:text-slate-300">
+              Projekt/Kunde (optional)
+            </label>
+            <select
+              value={projectId}
+              onChange={(e) => setProjectId(e.target.value)}
+              className="w-full rounded-lg border border-slate-300 bg-white px-3 py-2 text-sm outline-none ring-brand-500 focus:ring-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100"
+            >
+              <option value="">Kein Projekt</option>
+              {projects.map((p) => (
+                <option key={p.id} value={p.id}>
+                  {p.name}
                 </option>
               ))}
             </select>

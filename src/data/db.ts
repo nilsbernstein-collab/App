@@ -4,6 +4,10 @@ import type { Category } from '@/types/category'
 import type { IncomeSource } from '@/types/incomeSource'
 import type { SubscriptionStatus } from '@/types/subscription'
 import type { UserSettings } from '@/types/settings'
+import type { RecurringRule } from '@/types/recurringRule'
+import type { Project } from '@/types/project'
+import type { Budget } from '@/types/budget'
+import type { Invoice } from '@/types/invoice'
 import { DEFAULT_CATEGORY_SEED } from '@/types/category'
 import { DEFAULT_SETTINGS } from '@/types/settings'
 
@@ -19,6 +23,10 @@ export class NicheTrackDB extends Dexie {
   incomeSources!: EntityTable<IncomeSource, 'id'>
   subscription!: EntityTable<SubscriptionStatus, 'id'>
   settings!: EntityTable<UserSettings, 'id'>
+  recurringRules!: EntityTable<RecurringRule, 'id'>
+  projects!: EntityTable<Project, 'id'>
+  budgets!: EntityTable<Budget, 'id'>
+  invoices!: EntityTable<Invoice, 'id'>
 
   constructor() {
     super('nichetrack')
@@ -29,6 +37,14 @@ export class NicheTrackDB extends Dexie {
       incomeSources: 'id, archived, createdAt',
       subscription: 'id',
       settings: 'id',
+    })
+
+    this.version(2).stores({
+      transactions: 'id, type, date, categoryId, sourceId, projectId, recurringRuleId, invoiceId, createdAt',
+      recurringRules: 'id, active, categoryId',
+      projects: 'id, archived, createdAt',
+      budgets: 'id, categoryId',
+      invoices: 'id, status, projectId, dueDate, createdAt',
     })
   }
 }

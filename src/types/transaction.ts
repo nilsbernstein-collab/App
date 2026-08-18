@@ -9,6 +9,12 @@ export interface Transaction {
   categoryId: string
   /** Only relevant for income transactions. */
   sourceId?: string
+  /** Optional project/client this transaction belongs to, for profitability analysis. */
+  projectId?: string
+  /** Set when this transaction was auto-generated from a recurring rule. */
+  recurringRuleId?: string
+  /** Set when this transaction was created by marking an invoice as paid. */
+  invoiceId?: string
   note?: string
   createdAt: string // ISO datetime
   updatedAt: string // ISO datetime

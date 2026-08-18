@@ -9,6 +9,7 @@ import { useSettings } from '@/hooks/useSettings'
 import { forecastIncome } from '@/lib/forecast'
 import { useIsPro } from '@/hooks/useSubscription'
 import { ExportPanel } from '@/components/reports/ExportPanel'
+import { ProjectProfitabilityTable } from '@/components/reports/ProjectProfitabilityTable'
 
 export function ReportsPage() {
   const { data: monthlyPoints, isLoading } = useMonthlyPoints(6)
@@ -27,6 +28,13 @@ export function ReportsPage() {
           Einnahmen vs. Ausgaben (letzte 6 Monate)
         </h2>
         {isLoading ? <Skeleton className="h-[280px] w-full" /> : <MonthlyBarChart data={monthlyPoints} />}
+      </div>
+
+      <div className="rounded-2xl border border-slate-200 bg-white p-5 shadow-sm dark:border-slate-800 dark:bg-slate-900">
+        <h2 className="mb-4 text-sm font-semibold text-slate-800 dark:text-slate-100">
+          Rentabilität pro Projekt/Kunde
+        </h2>
+        <ProjectProfitabilityTable />
       </div>
 
       <div className="grid grid-cols-1 gap-5 lg:grid-cols-2">
