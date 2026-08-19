@@ -112,6 +112,38 @@ export const LoaderIcon = (props: IconProps) => (
   </svg>
 )
 
+export const ChevronLeftIcon = (props: IconProps) => (
+  <svg {...base} {...props}>
+    <path d="m15 18-6-6 6-6" />
+  </svg>
+)
+
+export const ChevronRightIcon = (props: IconProps) => (
+  <svg {...base} {...props}>
+    <path d="m9 18 6-6-6-6" />
+  </svg>
+)
+
+export const AlertTriangleIcon = (props: IconProps) => (
+  <svg {...base} {...props}>
+    <path d="M10.3 3.9 1.8 18a1 1 0 0 0 .9 1.5h18.6a1 1 0 0 0 .9-1.5L13.7 3.9a1 1 0 0 0-1.7 0Z" />
+    <path d="M12 9v4M12 16.5h.01" />
+  </svg>
+)
+
+export const UploadIcon = (props: IconProps) => (
+  <svg {...base} {...props}>
+    <path d="M12 16V4m0 0-4 4m4-4 4 4M4 16v3a1 1 0 0 0 1 1h14a1 1 0 0 0 1-1v-3" />
+  </svg>
+)
+
+export const CalendarIcon = (props: IconProps) => (
+  <svg {...base} {...props}>
+    <rect x="3" y="4.5" width="18" height="16" rx="2" />
+    <path d="M3 9.5h18M8 2.5v4M16 2.5v4" />
+  </svg>
+)
+
 export const ReceiptIcon = (props: IconProps) => (
   <svg {...base} {...props}>
     <path d="M6 3h12a1 1 0 0 1 1 1v17l-2.5-1.5L14 21l-2-1.5L10 21l-2.5-1.5L5 21V4a1 1 0 0 1 1-1Z" />

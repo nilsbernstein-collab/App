@@ -72,6 +72,19 @@ export function useUpdateTransaction() {
   })
 }
 
+export function useBulkCreateTransactions() {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (inputs: NewTransaction[]) => transactionRepository.bulkCreate(inputs),
+    onError: () => toast.error('Import fehlgeschlagen.'),
+    onSuccess: (created) => {
+      toast.success(`${created.length} Transaktionen importiert`)
+      queryClient.invalidateQueries({ queryKey: transactionsKey })
+    },
+  })
+}
+
 export function useDeleteTransaction() {
   const queryClient = useQueryClient()
 

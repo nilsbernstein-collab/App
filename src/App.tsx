@@ -7,6 +7,7 @@ import { DashboardPage } from '@/pages/DashboardPage'
 import { TransactionsPage } from '@/pages/TransactionsPage'
 import { SettingsPage } from '@/pages/SettingsPage'
 import { InvoicesPage } from '@/pages/InvoicesPage'
+import { CashflowPage } from '@/pages/CashflowPage'
 import { TransactionFormModal } from '@/components/transactions/TransactionFormModal'
 import { UpgradeModal } from '@/components/upgrade/UpgradeModal'
 import { CheckoutModal } from '@/components/upgrade/CheckoutModal'
@@ -61,6 +62,7 @@ function App() {
             }
           />
           <Route path="/invoices" element={<InvoicesPage />} />
+          <Route path="/cashflow" element={<CashflowPage />} />
           <Route path="/settings" element={<SettingsPage />} />
         </Route>
       </Routes>

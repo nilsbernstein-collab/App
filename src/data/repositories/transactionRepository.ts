@@ -33,6 +33,18 @@ export const transactionRepository = {
     return transaction
   },
 
+  async bulkCreate(inputs: NewTransaction[]): Promise<Transaction[]> {
+    const now = new Date().toISOString()
+    const transactions: Transaction[] = inputs.map((input) => ({
+      ...input,
+      id: crypto.randomUUID(),
+      createdAt: now,
+      updatedAt: now,
+    }))
+    await db.transactions.bulkAdd(transactions)
+    return transactions
+  },
+
   async update(id: string, patch: TransactionUpdate): Promise<void> {
     await db.transactions.update(id, { ...patch, updatedAt: new Date().toISOString() })
   },

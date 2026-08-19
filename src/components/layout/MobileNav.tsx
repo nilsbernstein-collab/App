@@ -1,12 +1,13 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { NavLink } from 'react-router-dom'
 import { createPortal } from 'react-dom'
-import { ChartIcon, CloseIcon, HomeIcon, ListIcon, ReceiptIcon, SettingsIcon } from '@/components/common/Icons'
+import { CalendarIcon, ChartIcon, CloseIcon, HomeIcon, ListIcon, ReceiptIcon, SettingsIcon } from '@/components/common/Icons'
 
 const navItems = [
   { to: '/', label: 'Dashboard', icon: HomeIcon, end: true },
   { to: '/transactions', label: 'Transaktionen', icon: ListIcon, end: false },
   { to: '/invoices', label: 'Rechnungen', icon: ReceiptIcon, end: false },
+  { to: '/cashflow', label: 'Cashflow', icon: CalendarIcon, end: false },
   { to: '/reports', label: 'Berichte', icon: ChartIcon, end: false },
   { to: '/settings', label: 'Einstellungen', icon: SettingsIcon, end: false },
 ]

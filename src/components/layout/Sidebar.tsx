@@ -1,5 +1,5 @@
 import { NavLink } from 'react-router-dom'
-import { ChartIcon, HomeIcon, ListIcon, ReceiptIcon, SettingsIcon, SparkleIcon } from '@/components/common/Icons'
+import { CalendarIcon, ChartIcon, HomeIcon, ListIcon, ReceiptIcon, SettingsIcon, SparkleIcon } from '@/components/common/Icons'
 import { useIsPro } from '@/hooks/useSubscription'
 import { useUiStore } from '@/store/uiStore'
 
@@ -7,6 +7,7 @@ const navItems = [
   { to: '/', label: 'Dashboard', icon: HomeIcon, end: true },
   { to: '/transactions', label: 'Transaktionen', icon: ListIcon, end: false },
   { to: '/invoices', label: 'Rechnungen', icon: ReceiptIcon, end: false },
+  { to: '/cashflow', label: 'Cashflow', icon: CalendarIcon, end: false },
   { to: '/reports', label: 'Berichte', icon: ChartIcon, end: false },
   { to: '/settings', label: 'Einstellungen', icon: SettingsIcon, end: false },
 ]

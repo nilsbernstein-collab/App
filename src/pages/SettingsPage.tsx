@@ -11,6 +11,7 @@ import { ApiAccessCard } from '@/components/settings/ApiAccessCard'
 import { RecurringRulesManager } from '@/components/settings/RecurringRulesManager'
 import { BudgetManager } from '@/components/settings/BudgetManager'
 import { ProjectManager } from '@/components/settings/ProjectManager'
+import { TaxSettings } from '@/components/settings/TaxSettings'
 import type { Theme } from '@/types/settings'
 
 function SectionCard({ title, description, children }: { title: string; description?: string; children: React.ReactNode }) {
@@ -158,6 +159,10 @@ export function SettingsPage() {
 
       <SectionCard title="Projekte & Kunden">
         <ProjectManager />
+      </SectionCard>
+
+      <SectionCard title="Steuer" description="Land und Abzugsfähigkeit für die EÜR-Vorbereitung.">
+        <TaxSettings />
       </SectionCard>
 
       <SectionCard

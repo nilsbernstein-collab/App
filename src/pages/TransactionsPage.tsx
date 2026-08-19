@@ -7,8 +7,10 @@ import { useDeleteTransaction } from '@/hooks/useTransactions'
 import { TransactionRow } from '@/components/transactions/TransactionRow'
 import { Skeleton } from '@/components/common/Skeleton'
 import { useUiStore } from '@/store/uiStore'
+import { useIsPro } from '@/hooks/useSubscription'
+import { ImportModal } from '@/components/transactions/ImportModal'
 import type { TransactionType } from '@/types/transaction'
-import { PlusIcon } from '@/components/common/Icons'
+import { PlusIcon, UploadIcon } from '@/components/common/Icons'
 
 type TypeFilter = 'all' | TransactionType
 
@@ -18,10 +20,13 @@ export function TransactionsPage() {
   const { data: sources } = useIncomeSources()
   const deleteTransaction = useDeleteTransaction()
   const openTransactionForm = useUiStore((s) => s.openTransactionForm)
+  const openUpgradeModal = useUiStore((s) => s.openUpgradeModal)
+  const isPro = useIsPro()
 
   const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [search, setSearch] = useState('')
+  const [isImportOpen, setImportOpen] = useState(false)
 
   const sourceLookup = new Map((sources ?? []).map((s) => [s.id, s.name]))
 
@@ -75,6 +80,13 @@ export function TransactionsPage() {
             className="w-full rounded-lg border border-slate-300 bg-white px-3 py-1.5 text-sm outline-none ring-brand-500 focus:ring-2 dark:border-slate-700 dark:bg-slate-900 dark:text-slate-100 sm:w-48"
           />
           <button
+            onClick={() => (isPro ? setImportOpen(true) : openUpgradeModal('import'))}
+            className="flex shrink-0 items-center gap-1.5 rounded-lg border border-slate-300 px-3 py-1.5 text-sm font-medium text-slate-600 hover:bg-slate-50 dark:border-slate-700 dark:text-slate-300 dark:hover:bg-slate-800"
+          >
+            <UploadIcon className="h-4 w-4" />
+            <span className="hidden sm:inline">Import</span>
+          </button>
+          <button
             onClick={() => openTransactionForm('expense')}
             className="flex shrink-0 items-center gap-1.5 rounded-lg bg-brand-500 px-3 py-1.5 text-sm font-medium text-white hover:bg-brand-600"
           >
@@ -112,6 +124,8 @@ export function TransactionsPage() {
           </div>
         )}
       </div>
+
+      <ImportModal isOpen={isImportOpen} onClose={() => setImportOpen(false)} />
     </div>
   )
 }

@@ -15,6 +15,7 @@ IndexedDB, kein Server nötig zum Betrieb.
 - **Recharts** für Diagramme, **Framer Motion** für Animationen
 - **jsPDF** für PDF-Reports/Rechnungen (lazy-loaded, nur bei tatsächlichem Export geladen)
 - **Tesseract.js** für clientseitige Belegerkennung (OCR, lazy-loaded)
+- **PapaParse** für CSV-Import (Bank-/Shopify-/PayPal-Exporte, lazy-loaded)
 
 ## Architektur
 
@@ -23,14 +24,15 @@ src/
   components/     UI-Komponenten, gruppiert nach Feature
     layout/         AppShell, Sidebar, Header, MobileNav
     dashboard/      Dashboard-spezifische Komponenten
-    transactions/   Transaktionsformular (inkl. Beleg-Scan) & -liste
+    transactions/   Transaktionsformular (inkl. Beleg-Scan), CSV-Import-Wizard & -liste
     invoices/       Rechnungsformular & Status-Badge
+    cashflow/       Cashflow-Kalender
     charts/         Recharts-Wrapper (Bar/Line/Comparison)
     upgrade/        Upgrade- & Checkout-Modal
-    reports/        Steuerrücklage, Export-Panel, Projekt-Rentabilität
-    settings/       Kategorie-, Budget-, Projekt- & Recurring-Rule-Manager, API-Zugang
+    reports/        Steuerrücklage, Export-Panel, Projekt-Rentabilität, EÜR-Karte
+    settings/       Kategorie-, Budget-, Projekt-, Recurring-Rule- & Steuer-Manager, API-Zugang
     common/         Modal, Skeleton, Icons, ProGate, ...
-  pages/          Eine Komponente pro Route (Dashboard, Transactions, Invoices, Reports, Settings)
+  pages/          Eine Komponente pro Route (Dashboard, Transactions, Invoices, Cashflow, Reports, Settings)
   hooks/          React-Query-Hooks (useTransactions, useCategories, ...) + abgeleitete Selektoren
   store/          Zustand-Stores (UI-State, Theme)
   data/
@@ -38,7 +40,7 @@ src/
     recurringGenerator.ts  Materialisiert fällige wiederkehrende Buchungen als echte Transaktionen
     repositories/          Ein Repository pro Entität — einziger Ort, der auf Dexie zugreift
   lib/            Reine Business-Logik ohne React-Abhängigkeit (Geld, Datum, Steuer, Prognose,
-                  Export, Pricing, Recurrence, OCR-Parsing)
+                  Export, Pricing, Recurrence, OCR-Parsing, CSV-Import-Heuristik, EÜR, Cashflow-Forecast)
   types/          Domain-Typen (Transaction, Category, IncomeSource, Subscription, Settings,
                   RecurringRule, Project, Budget, Invoice)
 ```
@@ -79,6 +81,18 @@ Datenbank-Tabellen abbilden.
 - **Rechnungen** (`hooks/useInvoices.ts`): Positionen, PDF-Export, Status-Tracking. Beim Markieren als
   „bezahlt" wird automatisch eine verknüpfte Einnahme-Transaktion erzeugt (`invoiceId`/`paidTransactionId`),
   damit Rechnungsstellung und Cashflow-Tracking konsistent bleiben statt doppelt gepflegt zu werden.
+- **CSV-Import** (`lib/csvImport.ts`): echter, funktionsfähiger Ersatz für Live-API-Anbindungen an
+  Bank/Shopify/PayPal (keine OAuth-Credentials nötig). Erkennt Spalten heuristisch (deutsche und
+  englische Bank-Begriffe), parst sowohl deutsche (1.234,56) als auch US-Zahlenformate (1,234.56),
+  erkennt Duplikate gegen bestehende Transaktionen und importiert als Batch.
+- **EÜR-Vorbereitung** (`lib/euer.ts`): gruppiert Transaktionen eines Jahres nach Kategorie,
+  berücksichtigt eine optionale Abzugsfähigkeit pro Kategorie (`Category.deductiblePercent`, z. B. 70%
+  für Bewirtungskosten) und exportiert als PDF/CSV. Titel/Bezeichnung richten sich nach dem
+  Land in den Einstellungen (`UserSettings.taxCountry`).
+- **Cashflow-Kalender** (`lib/cashflowForecast.ts`): projiziert den aktuellen Kontostand Tag für Tag in
+  die Zukunft, basierend auf noch nicht materialisierten Vorkommen aktiver wiederkehrender Regeln
+  (`lib/recurrence.ts#occurrencesBetween`) und Fälligkeitsdaten offener Rechnungen — reine Vorschau,
+  nichts davon wird persistiert.
 
 ### Free-Tier / Pro-Tier
 

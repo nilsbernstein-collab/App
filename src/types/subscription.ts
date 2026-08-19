@@ -20,4 +20,7 @@ export type UpgradeTrigger =
   | 'tax_reserve'
   | 'forecast'
   | 'api_access'
+  | 'import'
+  | 'euer_export'
+  | 'cashflow_calendar'
   | 'generic'

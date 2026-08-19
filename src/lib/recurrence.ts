@@ -1,4 +1,4 @@
-import { addMonths, addWeeks, addYears, format, isAfter, parseISO } from 'date-fns'
+import { addMonths, addWeeks, addYears, format, isAfter, isBefore, parseISO, startOfDay } from 'date-fns'
 import type { RecurrenceFrequency, RecurringRule } from '@/types/recurringRule'
 
 function advance(date: Date, frequency: RecurrenceFrequency, interval: number): Date {
@@ -31,6 +31,37 @@ export function dueOccurrences(rule: RecurringRule, asOf: Date = new Date()): st
     if (endDate && isAfter(cursor, endDate)) break
 
     occurrences.push(format(cursor, 'yyyy-MM-dd'))
+    cursor = advance(cursor, rule.frequency, rule.interval)
+  }
+
+  return occurrences
+}
+
+/**
+ * Every occurrence date (ISO, ascending) for a rule strictly between `from`
+ * and `to` (inclusive) — used for forward-looking previews like the cashflow
+ * calendar. Resumes from the rule's own cursor (`lastGeneratedDate`/
+ * `startDate`), so it lines up exactly with what `dueOccurrences` will
+ * materialize once those dates arrive.
+ */
+export function occurrencesBetween(rule: RecurringRule, from: Date, to: Date): string[] {
+  const occurrences: string[] = []
+
+  let cursor = rule.lastGeneratedDate ? advance(parseISO(rule.lastGeneratedDate), rule.frequency, rule.interval) : parseISO(rule.startDate)
+
+  const endDate = rule.endDate ? parseISO(rule.endDate) : null
+  // Normalize to day granularity so a `from`/`to` carrying today's time-of-day
+  // (e.g. `new Date()`) doesn't exclude an occurrence that lands on today.
+  const fromDay = startOfDay(from)
+  const toDay = startOfDay(to)
+
+  for (let i = 0; i < 1000; i++) {
+    if (isAfter(cursor, toDay)) break
+    if (endDate && isAfter(cursor, endDate)) break
+
+    if (!isBefore(cursor, fromDay)) {
+      occurrences.push(format(cursor, 'yyyy-MM-dd'))
+    }
     cursor = advance(cursor, rule.frequency, rule.interval)
   }
 

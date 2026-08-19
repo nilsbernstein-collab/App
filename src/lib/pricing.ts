@@ -17,6 +17,9 @@ export const FEATURE_COMPARISON: FeatureComparisonRow[] = [
   { label: 'Steuerrücklagen-Rechner', free: false, pro: true },
   { label: 'Umsatzprognosen', free: false, pro: true },
   { label: 'Export (PDF, CSV, JSON)', free: false, pro: true },
+  { label: 'CSV-Import (Bank/Shopify/PayPal)', free: false, pro: true },
+  { label: 'EÜR-Vorbereitung & Export', free: false, pro: true },
+  { label: 'Cashflow-Kalender', free: false, pro: true },
   { label: 'API-Zugang (Bank/Shopify-Anbindung)', free: false, pro: true },
 ]
 
@@ -44,6 +47,18 @@ export const UPGRADE_COPY: Record<string, { title: string; description: string }
   api_access: {
     title: 'API-Zugang mit Pro',
     description: 'Bereite die Anbindung an Bank- oder Shopify-Daten mit dem Pro-API-Zugang vor.',
+  },
+  import: {
+    title: 'CSV-Import mit Pro',
+    description: 'Importiere Bank-, Shopify- oder PayPal-Exporte als Transaktionen — mit Spalten-Zuordnung und automatischer Duplikat-Erkennung, statt alles manuell abzutippen.',
+  },
+  euer_export: {
+    title: 'EÜR-Vorbereitung mit Pro',
+    description: 'Erhalte eine nach Einnahmen/Ausgaben gegliederte Übersicht für deine Steuererklärung, exportierbar als PDF oder CSV.',
+  },
+  cashflow_calendar: {
+    title: 'Cashflow-Kalender mit Pro',
+    description: 'Sieh auf einen Blick, ob dein Geld reicht — mit einer Vorausberechnung deines Kontostands basierend auf wiederkehrenden Buchungen und offenen Rechnungen.',
   },
   generic: {
     title: 'Hol dir NicheTrack Pro',

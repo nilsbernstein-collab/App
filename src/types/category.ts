@@ -15,6 +15,12 @@ export interface Category {
   /** Sort position, used for drag-and-drop reordering. */
   order: number
   rule?: CategorizationRule
+  /**
+   * For expense categories: percentage of spend that's tax-deductible
+   * (e.g. 70 for German "Bewirtungskosten"). Undefined/100 means fully
+   * deductible — only used by the EÜR export, doesn't affect anything else.
+   */
+  deductiblePercent?: number
 }
 
 export type NewCategory = Omit<Category, 'id'>
